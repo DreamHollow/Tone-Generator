@@ -13,6 +13,13 @@ const double AMPLITUDE = 30000; // near max
 
 void playTone(double frequency, float duration)
 {
+    if(duration <= 0)
+    {
+        std::cout << "ERROR: Tone duration must be a positive value.\n";
+        std::cout << "Failed to play frequency of " << frequency << std::endl;
+        return;
+    }
+
     // static casting is not mandatory but helpful
     unsigned int totalSamples = static_cast<unsigned int>(sampleRate * duration);
     std::vector<sf::Int16> samples(totalSamples);
@@ -22,7 +29,12 @@ void playTone(double frequency, float duration)
 
     // Create a unique buffer object on the heap.
     // Why? It doesn't strain the stack.
+    // This also prevents some degree of performance failure.
     //buffer = new sf::SoundBuffer();
+
+    // This extremely short buffer provides safer memory.
+    sf::sleep(sf::milliseconds(5));
+
     buffer = std::make_unique<sf::SoundBuffer>();
     if(buffer == nullptr) // if this happens there is no memory to allocate
     {
@@ -60,14 +72,6 @@ void playTone(double frequency, float duration)
     {
         sf::sleep(sf::milliseconds(200));
     }
-
-    /*
-    if(buffer != nullptr)
-    {
-        delete buffer;
-        buffer = nullptr;
-    }
-    */
 }
 
 // Please note this program can likely play more tones than this,
